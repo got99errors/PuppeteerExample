@@ -1,0 +1,21 @@
+{
+  "name": "scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "scrape",
+    "mma",
+    "video",
+    "social",
+    "media"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^13.0.1"
+  }
+}
