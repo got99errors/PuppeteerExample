@@ -1,3 +1,4 @@
+const dataManager = require('./storageManager')
 const puppeteer = require("puppeteer");
 const URL = "https://www.mmamania.com/midnight-mmamania-news";
 const ENTRY_SELECTOR =
@@ -12,11 +13,20 @@ module.exports.scrape = async function() {
 
 	await page.goto(URL);
 	await page.waitForSelector(ENTRY_SELECTOR);
-	const urls = await page.$$eval(ENTRY_SELECTOR, (links) => {
+	let urls = await page.$$eval(ENTRY_SELECTOR, (links) => {
 		links = links.map((el) => el.querySelector("div > a").href);
 		return links;
 	});
-	console.log("urls", urls.length);
+  
+  const data = dataManager.loadData()
+  const existingPostsLinks = Object.keys(data.posts)
+  
+  urls = urls.filter(link => !existingPostsLinks.includes(link))
+
+  if (urls.length === 0) {
+    console.log('no new posts to scrape')
+    return
+  }
 
 	// 2. Loop through each of those links, open a new page instance and get the relevant iframes
 	let pagePromise = (link) =>
@@ -33,7 +43,6 @@ module.exports.scrape = async function() {
 				let divs = [];
 				// iterate elements between the target H2 tag to the following H2
 				while (sibling !== lastHeader) {
-					console.log(sibling.tagName);
 					if (sibling.tagName === "DIV") {
 						divs.push(sibling);
 					}
@@ -46,14 +55,12 @@ module.exports.scrape = async function() {
 			await newPage.close();
 		});
 
-	let iframeURLs = [];
-	let currentPageData;
-	for (link in urls) {
-    console.log(`scraping link ${urls[link]}`);
-		currentPageData = await pagePromise(urls[link]);
+	let currentPageData, url;
 
-    console.log(`found ${currentPageData.length} items`);
-		iframeURLs = iframeURLs.concat(currentPageData);
+	for (link in urls) {
+    url = urls[link]
+		currentPageData = await pagePromise(url);
+    data.posts[url] = currentPageData
 	}
-  console.log(iframeURLs)
+  dataManager.saveData(data)
 }
