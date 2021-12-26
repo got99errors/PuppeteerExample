@@ -18,6 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "node-cron": "^3.0.0",
     "puppeteer": "^13.0.1"
   },
   "devDependencies": {

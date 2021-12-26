@@ -1,2 +1,1 @@
-const scraper = require('./scraper')
-// scraper.scrape()
+const scheduler = require('./cron-scrape')
