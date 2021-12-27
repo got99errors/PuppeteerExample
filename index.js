@@ -8,4 +8,6 @@ app.get('/', (req,res) => {
   const mediaItems = dataManager.getMediaItems()
   res.render('index', { mediaItems })
 })
-app.listen(3000, () => console.log("Listening on port 3000"))
+const port = process.env.PORT || "3000";
+app.set("port", port);
+app.listen(port, () => console.log("Listening on port",port))
