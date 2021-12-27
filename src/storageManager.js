@@ -1,5 +1,5 @@
 const fs = require('fs');
-const FILEPATH = './data.json'
+const FILEPATH = 'src/data.json'
 
 const loadData = () => {
   try {

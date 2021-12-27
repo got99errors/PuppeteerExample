@@ -1,4 +1,4 @@
-const dataManager = require('./storageManager')
+const storageManager = require('./storageManager')
 const puppeteer = require("puppeteer");
 const URL = "https://www.mmamania.com/midnight-mmamania-news";
 const ENTRY_SELECTOR =
@@ -18,15 +18,17 @@ module.exports.scrape = async function() {
 		return links;
 	});
   
-  const data = dataManager.loadData()
+  const data = storageManager.loadData()
   const existingPostsLinks = Object.keys(data.posts)
   
-  urls = urls.filter(link => !existingPostsLinks.includes(link))
+  urls = urls.filter(link => !existingPostsLinks.includes(link)).slice(0, 2)
 
   if (urls.length === 0) {
     console.log('no new posts to scrape')
     return
   }
+
+	console.log('found',urls.length,'new urls')
 
 	// 2. Loop through each of those links, open a new page instance and get the relevant iframes
 	let pagePromise = (link) =>
@@ -61,6 +63,7 @@ module.exports.scrape = async function() {
     url = urls[link]
 		currentPageData = await pagePromise(url);
     data.posts[url] = currentPageData
+		console.log('added media from',url, currentPageData.length, 'items');
 	}
-  dataManager.saveData(data)
+  storageManager.saveData(data)
 }

@@ -18,10 +18,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.17.2",
     "node-cron": "^3.0.0",
+    "pug": "^3.0.2",
     "puppeteer": "^13.0.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
+  },
+  "nodemonConfig": {
+    "ignore": ["src/data.json", "data.json"]
   }
 }
