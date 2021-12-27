@@ -1,9 +1,12 @@
 const fs = require('fs');
-const FILEPATH = 'src/data.json'
+const FILEPATH = process.cwd()+'/data.json'
 
 const loadData = () => {
   try {
-    const rawData = fs.readFileSync(FILEPATH)
+    if (!fs.existsSync(FILEPATH)) {
+      saveData({posts: {}})
+    }
+    const rawData = fs.readFileSync(FILEPATH, 'utf8')
     const data = JSON.parse(rawData)
     return data
   }
