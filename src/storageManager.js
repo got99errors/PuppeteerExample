@@ -9,6 +9,7 @@ const loadData = () => {
   }
   catch(err) {
     console.error(err)
+    saveData({posts: {}})
     return { posts: {} }
   }
 }
