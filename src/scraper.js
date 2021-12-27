@@ -8,7 +8,7 @@ const ENTRY_SELECTOR =
 const CONTENT_SELECTOR = "div.c-entry-content";
 
 module.exports.scrape = async function() {
-	const browser = await puppeteer.launch({});
+	const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
 
   // 1. Collect all links
 	const page = await browser.newPage();
