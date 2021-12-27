@@ -1,4 +1,4 @@
-const scheduler = require('./src/cron-scrape')
+require('./src/cron-scrape')
 const dataManager = require('./src/dataManager')
 const express = require('express')
 const app = express()

@@ -1,6 +1,8 @@
-const storageManager = require('./storageManager')
+const parseUtils = require('./utils/parse.utils')
+const dataManager = require('./dataManager')
 const puppeteer = require("puppeteer");
-const URL = "https://www.mmamania.com/midnight-mmamania-news";
+
+const WEBSITE_URL = "https://www.mmamania.com/midnight-mmamania-news";
 const ENTRY_SELECTOR =
 	"#content > div:nth-child(3) > div > div.l-segment.l-main-content.l-sidebar-fixed.river-segment-0 > div.l-col__main > div > div";
 const CONTENT_SELECTOR = "div.c-entry-content";
@@ -11,27 +13,23 @@ module.exports.scrape = async function() {
   // 1. Collect all links
 	const page = await browser.newPage();
 
-	await page.goto(URL);
+	await page.goto(WEBSITE_URL);
 	await page.waitForSelector(ENTRY_SELECTOR);
 	let urls = await page.$$eval(ENTRY_SELECTOR, (links) => {
 		links = links.map((el) => el.querySelector("div > a").href);
 		return links;
 	});
   
-  const data = storageManager.loadData()
-  const existingPostsLinks = Object.keys(data.posts)
-  
-  urls = urls.filter(link => !existingPostsLinks.includes(link)).slice(0, 2)
+  urls = dataManager.filterExistingPostsUrl(urls)
 
-  if (urls.length === 0) {
-    console.log('no new posts to scrape')
+	if (urls.length === 0) {
     return
   }
 
-	console.log('found',urls.length,'new urls')
+	urls = urls.map(parseUtils.parseUrl)
 
 	// 2. Loop through each of those links, open a new page instance and get the relevant iframes
-	let pagePromise = (link) =>
+	const pagePromise = (link) =>
 		new Promise(async (resolve, reject) => {
 			let newPage = await browser.newPage();
 			await newPage.goto(link);
@@ -57,13 +55,13 @@ module.exports.scrape = async function() {
 			await newPage.close();
 		});
 
-	let currentPageData, url;
-
-	for (link in urls) {
-    url = urls[link]
+	let currentPageData, posts = {};
+	
+	for (key in urls) {
+    const {url, date, postId} = urls[key]
 		currentPageData = await pagePromise(url);
-    data.posts[url] = currentPageData
-		console.log('added media from',url, currentPageData.length, 'items');
+    posts[postId] = {items: currentPageData, date, url}
 	}
-  storageManager.saveData(data)
+	
+	dataManager.addPosts(posts)
 }
