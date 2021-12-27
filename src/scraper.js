@@ -9,10 +9,11 @@ const CONTENT_SELECTOR = "div.c-entry-content";
 
 module.exports.scrape = async function () {
 	try {
-		const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+		const browser = await puppeteer.launch({ headless: true, args: ["--no-sandbox"] });
 
 		// 1. Collect all links
 		const page = await browser.newPage();
+		await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3419.0 Safari/537.36');
 
 		await page.goto(WEBSITE_URL);
 		await page.waitForSelector(ENTRY_SELECTOR);
