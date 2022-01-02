@@ -8,5 +8,8 @@ html
         p from 
          a(href="https://www.mmamania.com") MMAMania.com
         ul
+         if mediaItems.length > 0
           each item in mediaItems
             iframe(width='660', height='1115', src=item, frameBorder="0", scrolling="no", allowfullscreen="yes")
+         else
+          h3 No videos to display
